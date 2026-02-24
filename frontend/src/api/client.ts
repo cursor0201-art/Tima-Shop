@@ -9,7 +9,7 @@ import type {
   CreateOrderResponse,
 } from '@/types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 const client = axios.create({
   baseURL: API_BASE,
@@ -40,7 +40,7 @@ function handleError(err: unknown): never {
 
 export async function fetchCategories(): Promise<Category[]> {
   try {
-    const { data } = await client.get<Category[]>('/api/categories');
+    const { data } = await client.get<Category[]>('/categories/');
     return data;
   } catch (e) {
     return handleError(e);
@@ -61,7 +61,7 @@ export async function fetchProducts(filters: ProductFilters = {}): Promise<Pagin
     if (filters.sort) params.sort = filters.sort;
     if (filters.page) params.page = String(filters.page);
 
-    const { data } = await client.get<PaginatedResponse<Product>>('/api/products', { params });
+    const { data } = await client.get<PaginatedResponse<Product>>('/products/', { params });
     return data;
   } catch (e) {
     return handleError(e);
@@ -70,7 +70,7 @@ export async function fetchProducts(filters: ProductFilters = {}): Promise<Pagin
 
 export async function fetchProduct(slug: string): Promise<Product> {
   try {
-    const { data } = await client.get<Product>(`/api/products/${slug}`);
+    const { data } = await client.get<Product>(`/products/${slug}/`);
     return data;
   } catch (e) {
     return handleError(e);
@@ -79,7 +79,7 @@ export async function fetchProduct(slug: string): Promise<Product> {
 
 export async function fetchCargoSettings(): Promise<CargoSettings> {
   try {
-    const { data } = await client.get<CargoSettings>('/api/settings/cargo');
+    const { data } = await client.get<CargoSettings>('/settings/cargo/');
     return data;
   } catch (e) {
     return handleError(e);
@@ -88,7 +88,7 @@ export async function fetchCargoSettings(): Promise<CargoSettings> {
 
 export async function createOrder(payload: CreateOrderPayload): Promise<CreateOrderResponse> {
   try {
-    const { data } = await client.post<CreateOrderResponse>('/api/orders', payload);
+    const { data } = await client.post<CreateOrderResponse>('/orders/', payload);
     return data;
   } catch (e) {
     return handleError(e);

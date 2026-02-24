@@ -13,11 +13,20 @@ const api = axios.create({
 export const shopApi = {
     // Categories
     getCategories: async (): Promise<Category[]> => {
-        const response = await api.get('/categories/');
-        if (Array.isArray(response.data)) {
-            return response.data;
+        try {
+            const response = await api.get('/categories/');
+            if (response.status !== 200) {
+                console.error('Categories API error:', response.status, response.data);
+                throw new Error(`Failed to fetch categories: ${response.status}`);
+            }
+            if (Array.isArray(response.data)) {
+                return response.data;
+            }
+            return response.data.results || [];
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            throw error;
         }
-        return response.data.results || [];
     },
 
     // Brands
@@ -31,12 +40,20 @@ export const shopApi = {
 
     // Products
     getProducts: async (params?: Record<string, any>): Promise<{ results: Product[], count: number }> => {
-        // Handling Pagination from Django DRF (returns { count, next, previous, results })
-        const response = await api.get('/products/', { params });
-        if (Array.isArray(response.data)) {
-            return { results: response.data, count: response.data.length }; // Fallback if no pagination
+        try {
+            const response = await api.get('/products/', { params });
+            if (response.status !== 200) {
+                console.error('Products API error:', response.status, response.data);
+                throw new Error(`Failed to fetch products: ${response.status}`);
+            }
+            if (Array.isArray(response.data)) {
+                return { results: response.data, count: response.data.length };
+            }
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw error;
         }
-        return response.data;
     },
 
     getProductBySlug: async (slug: string): Promise<Product> => {
