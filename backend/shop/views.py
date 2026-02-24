@@ -1,4 +1,4 @@
-from rest_framework import generics, viewsets, status
+from rest_framework import generics, viewsets, status, pagination
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser
 from django.db import transaction
@@ -13,6 +13,46 @@ from .serializers import (
     OrderWriteSerializer, OrderReadSerializer
 )
 
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Category.objects.filter(is_active=True)
+    serializer_class = CategorySerializer
+    permission_classes = [AllowAny]
+
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ProductPublicSerializer
+    permission_classes = [AllowAny]
+    pagination_class = pagination.PageNumberPagination
+
+    def get_queryset(self):
+        queryset = Product.objects.filter(is_active=True)
+        search = self.request.query_params.get('search', None)
+        category_slug = self.request.query_params.get('category', None)
+        brand_slug = self.request.query_params.get('brand', None)
+        
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+        if brand_slug:
+            queryset = queryset.filter(brand__slug=brand_slug)
+            
+        # Sorting
+        sort = self.request.query_params.get('sort', None)
+        if sort == 'price_asc':
+            queryset = queryset.order_by('public_price')
+        elif sort == 'price_desc':
+            queryset = queryset.order_by('-public_price')
+        elif sort == 'new':
+            queryset = queryset.order_by('-created_at')
+            
+        return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+# Legacy views for backward compatibility
 class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.filter(is_active=True)
     serializer_class = CategorySerializer

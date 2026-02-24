@@ -1,13 +1,15 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
-    CategoryListView, BrandListView, ProductPublicListView, ProductPublicDetailView,
+    CategoryViewSet, ProductViewSet, CategoryListView, BrandListView, ProductPublicListView, ProductPublicDetailView,
     CargoSettingsView, OrderCreateView, OrderPublicDetailView,
     AdminProductViewSet, AdminOrderViewSet, AdminCargoSettingsView
 )
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
+router.register(r'products', ProductViewSet, basename='product')
+router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'admin/products', AdminProductViewSet, basename='admin-product')
 router.register(r'admin/orders', AdminOrderViewSet, basename='admin-order')
 
