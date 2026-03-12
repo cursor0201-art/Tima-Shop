@@ -124,8 +124,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     os.environ.get('FRONTEND_URL', 'http://localhost:3000'),
-    'https://dashing-kleicha-ea43b8.netlify.app'
+    'https://dashing-kleicha-ea43b8.netlify.app',
+    'https://cc225b33.tima-shop1.pages.dev',
+    'https://tima-shop1.pages.dev',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://cc225b33.tima-shop1.pages.dev',
+    'https://tima-shop1.pages.dev',
+]
+
 CORS_ALLOW_ALL_ORIGINS = True # For ease of development/demo, restrict in production
 
 REST_FRAMEWORK = {
