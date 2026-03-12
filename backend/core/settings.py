@@ -11,6 +11,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-for-dev')
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = ['*', '.koyeb.app']
+SITE_URL = "https://sorry-kathi-bave-hub-2aab441a.koyeb.app"
 
 # Monkeypatch for Python 3.14 + Django < 5.2 Admin fix
 try:
