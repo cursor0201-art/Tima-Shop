@@ -17,27 +17,14 @@ export function calculateShipping(items: CartItem[], settings: CargoSettings | n
     }
   });
 
-  console.log(`DEBUG: Total weight: ${totalWeightGrams}g, Pricing Mode: ${settings.pricing_mode}`);
+  // Calculate based on weight per gram (13,000 per 100g = 130 per gram)
+  const price_per_gram = settings.price_per_kg ? Number(settings.price_per_kg) / 1000 : 130;
+  const final_shipping = totalWeightGrams * price_per_gram;
 
-  // Force weight-based calculation if we have weight, or follow settings
-  if (settings.pricing_mode === 'BY_WEIGHT' || (totalWeightGrams > 0 && !settings.fixed_fee)) {
-    const rate = Number(settings.price_per_kg || 500000); // Default to 500,000 per kg if not set
-    const fee = (totalWeightGrams / 1000) * rate;
-    console.log(`DEBUG: Using WEIGHT-BASED fee: ${fee} (Weight: ${totalWeightGrams}g, Rate: ${rate}/kg)`);
-    return fee;
-  }
+  console.log(`DEBUG: Final Calculation:`);
+  console.log(`- Total Weight: ${totalWeightGrams}g`);
+  console.log(`- Price per Gram: ${price_per_gram}`);
+  console.log(`- Final Shipping: ${final_shipping}`);
 
-  if (settings.pricing_mode === 'FIXED') {
-    const fee = Number(settings.fixed_fee || 0);
-    console.log(`DEBUG: Using FIXED fee: ${fee}`);
-    return fee;
-  }
-
-  if (settings.pricing_mode === 'PERCENT') {
-    const fee = (subtotal * Number(settings.percent_rate || 0)) / 100;
-    console.log(`DEBUG: Using PERCENT fee: ${fee} (${settings.percent_rate}%)`);
-    return fee;
-  }
-
-  return 0;
+  return final_shipping;
 }

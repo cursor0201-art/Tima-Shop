@@ -167,16 +167,10 @@ class OrderCreateView(generics.CreateAPIView):
             
         OrderItem.objects.bulk_create(order_items)
         
-        # Apply Cargo Settings
+        # Apply Cargo Settings (Strict Weight-Based)
         cargo, _ = CargoSettings.objects.get_or_create(id=1)
-        shipping_fee = Decimal('0')
-        
-        if cargo.pricing_mode == CargoSettings.PricingMode.FIXED and cargo.fixed_fee:
-            shipping_fee = cargo.fixed_fee
-        elif cargo.pricing_mode == CargoSettings.PricingMode.PERCENT and cargo.percent_rate:
-            shipping_fee = (subtotal * cargo.percent_rate) / Decimal('100')
-        elif cargo.pricing_mode == CargoSettings.PricingMode.BY_WEIGHT and cargo.price_per_kg:
-            shipping_fee = (Decimal(total_weight_grams) / Decimal('1000')) * cargo.price_per_kg
+        price_per_gram = (cargo.price_per_kg / Decimal('1000')) if cargo.price_per_kg else Decimal('130')
+        shipping_fee = Decimal(total_weight_grams) * price_per_gram
             
         order.subtotal = subtotal
         order.shipping_fee = shipping_fee
