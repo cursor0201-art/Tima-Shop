@@ -290,6 +290,7 @@ class OrderPaymentReceiptView(APIView):
             # Trigger Telegram notification with receipt
             try:
                 send_telegram_notification(order, receipt=receipt)
+                print(f"DEBUG: Telegram notification triggered for order {order.order_number}")
             except Exception as e:
                 print(f"Telegram notification fail: {e}")
                 

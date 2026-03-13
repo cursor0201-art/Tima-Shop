@@ -35,11 +35,17 @@ def send_telegram_notification(order, receipt=None):
         message += f"\n🔄 *Статус:* {order.get_status_display()}"
 
     # Try to get the photo: either the receipt or the first product image
+    photo_file = None
     photo_url = None
     site_url = getattr(settings, 'SITE_URL', 'http://localhost:8000').rstrip('/')
 
     if receipt and receipt.receipt_image:
-        photo_url = f"{site_url}{receipt.receipt_image.url}"
+        try:
+            # Prefer sending the actual file for receipts (more reliable)
+            photo_file = receipt.receipt_image.open('rb')
+        except Exception as e:
+            print(f"DEBUG: Could not open receipt file: {e}")
+            photo_url = f"{site_url}{receipt.receipt_image.url}"
     else:
         first_item = items.first()
         if first_item and first_item.product:
@@ -51,24 +57,38 @@ def send_telegram_notification(order, receipt=None):
                 elif photo_url.startswith('media/'):
                     photo_url = f"{site_url}/{photo_url}"
 
-    if photo_url:
-        url = f"https://api.telegram.org/bot{token}/sendPhoto"
-        payload = {
-            "chat_id": chat_id,
-            "photo": photo_url,
-            "caption": message,
-            "parse_mode": "Markdown"
-        }
-    else:
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
-        payload = {
-            "chat_id": chat_id,
-            "text": message,
-            "parse_mode": "Markdown"
-        }
-
     try:
-        response = requests.post(url, json=payload)
+        if photo_file:
+            url = f"https://api.telegram.org/bot{token}/sendPhoto"
+            files = {"photo": photo_file}
+            data = {
+                "chat_id": chat_id,
+                "caption": message,
+                "parse_mode": "Markdown"
+            }
+            response = requests.post(url, data=data, files=files)
+            photo_file.close()
+        elif photo_url:
+            url = f"https://api.telegram.org/bot{token}/sendPhoto"
+            payload = {
+                "chat_id": chat_id,
+                "photo": photo_url,
+                "caption": message,
+                "parse_mode": "Markdown"
+            }
+            response = requests.post(url, json=payload)
+        else:
+            url = f"https://api.telegram.org/bot{token}/sendMessage"
+            payload = {
+                "chat_id": chat_id,
+                "text": message,
+                "parse_mode": "Markdown"
+            }
+            response = requests.post(url, json=payload)
+
+        print(f"DEBUG: Telegram API Response ({response.status_code}): {response.text}")
         response.raise_for_status()
     except Exception as e:
         print(f"Error sending Telegram notification: {e}")
+        if 'photo_file' in locals() and photo_file:
+            photo_file.close()
