@@ -14,6 +14,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const { items, getTotal, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const [form, setForm] = useState({
     name: '',
@@ -71,8 +72,13 @@ export default function CheckoutPage() {
       const targetUrl = `/order-success?token=${res.public_token}&order=${res.order_number}`;
       console.log("DEBUG: redirect target", targetUrl);
 
-      navigate(targetUrl);
+      setIsRedirecting(true);
+      console.log("DEBUG: before redirect call");
       
+      // Use window.location.href for maximum reliability as per requirements
+      window.location.href = targetUrl;
+      
+      console.log("DEBUG: after redirect call");
       console.log("DEBUG: cart clear action");
       clearCart();
     } catch (error: any) {
@@ -84,7 +90,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && !isRedirecting) {
     navigate('/cart');
     return null;
   }
