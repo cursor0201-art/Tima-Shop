@@ -1,4 +1,4 @@
-from rest_framework import generics, viewsets, status, pagination
+from rest_framework import generics, viewsets, status, pagination, parsers
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser
 from django.db import transaction
@@ -207,7 +207,7 @@ class PaymentInstructionsView(APIView):
 
 class SubmitReceiptView(APIView):
     permission_classes = [AllowAny]
-    parser_classes = (pagination.parsers.MultiPartParser, pagination.parsers.FormParser) if hasattr(pagination, 'parsers') else []
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser)
 
     def post(self, request, public_token):
         order = get_object_or_404(Order, public_token=public_token)
@@ -244,21 +244,17 @@ class SubmitReceiptView(APIView):
 
 class OrderPaymentReceiptView(APIView):
     permission_classes = [AllowAny]
-    parser_classes = (pagination.parsers.MultiPartParser, pagination.parsers.FormParser) if hasattr(pagination, 'parsers') else []
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser)
 
     def post(self, request):
         order_id = request.data.get('order_id')
         if not order_id:
             return Response({"detail": "order_id is required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Match by id or order_number
-        order = Order.objects.filter(Q(id__isdigit=True, id=order_id if str(order_id).isdigit() else -1) | Q(order_number=order_id)).first()
-        if not order:
-            # Try numeric id specifically if the above Q felt risky or if it's strictly order_number
-             order = Order.objects.filter(order_number=order_id).first()
-        
+        # Match by order_number or id
+        order = Order.objects.filter(order_number=order_id).first()
         if not order and str(order_id).isdigit():
-             order = Order.objects.filter(id=order_id).first()
+            order = Order.objects.filter(id=order_id).first()
 
         if not order:
             return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)

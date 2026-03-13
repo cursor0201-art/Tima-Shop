@@ -94,11 +94,30 @@ export const shopApi = {
         formData.append('order_id', String(orderId));
         formData.append('receipt_image', file);
         formData.append('note', note);
-        const response = await api.post('/api/payment/receipt/', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        
+        console.log('DEBUG: Uploading receipt...', {
+            url: `${api.defaults.baseURL}/api/payment/receipt/`,
+            order_id: orderId,
+            file_name: file.name,
+            file_type: file.type,
+            file_size: file.size
         });
-        return response.data;
+
+        try {
+            const response = await api.post('/api/payment/receipt/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            console.log('DEBUG: Upload success:', response.status, response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error('DEBUG: Upload failed:', {
+                status: error.response?.status,
+                data: error.response?.data,
+                message: error.message
+            });
+            throw error;
+        }
     }
 };

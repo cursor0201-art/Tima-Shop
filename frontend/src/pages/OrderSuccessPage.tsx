@@ -65,9 +65,10 @@ export default function OrderSuccessPage() {
       await shopApi.submitReceipt(orderNumber, receiptFile, note);
       setUploadSuccess(true);
       setOrderStatus('RECEIPT_SUBMITTED');
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload failed:", err);
-      alert("Failed to upload receipt. Please try again.");
+      const errorDetail = err.response?.data?.detail || err.response?.data?.error || "Check your internet connection or file format.";
+      alert(`Failed to upload receipt: ${errorDetail}`);
     } finally {
       setUploadLoading(false);
     }
