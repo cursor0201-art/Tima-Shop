@@ -7,6 +7,9 @@ import { formatPrice } from '@/lib/format';
 import type { DeliveryMethod, PaymentMethod } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { shopApi } from '@/services/api';
+import { calculateShipping } from '@/lib/shipping';
+import { CargoSettings } from '@/types';
+import { useEffect } from 'react';
 
 export default function CheckoutPage() {
   const { t } = useTranslation();
@@ -15,6 +18,11 @@ export default function CheckoutPage() {
   const { items, getTotal, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [cargoSettings, setCargoSettings] = useState<CargoSettings | null>(null);
+
+  useEffect(() => {
+    shopApi.getCargoSettings().then(setCargoSettings).catch(console.error);
+  }, []);
 
   const [form, setForm] = useState({
     name: '',
@@ -28,7 +36,7 @@ export default function CheckoutPage() {
   const update = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
   const subtotal = getTotal();
-  const shipping = 50000;
+  const shipping = calculateShipping(items, cargoSettings);
   const total = subtotal + shipping;
 
   const handleSubmit = async (e: React.FormEvent) => {

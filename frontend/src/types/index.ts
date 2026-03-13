@@ -39,10 +39,17 @@ export interface Category {
 }
 
 // ---- Cargo / settings ----
+export type CargoPricingMode = 'FIXED' | 'PERCENT' | 'BY_WEIGHT';
+
 export interface CargoSettings {
-  description: string;
-  estimated_days: string;
-  cost_info: string;
+  pricing_mode: CargoPricingMode;
+  fixed_fee: number | null;
+  percent_rate: number | null;
+  price_per_kg: number | null;
+  description_ru: string;
+  description_uz: string;
+  eta_days_min: number;
+  eta_days_max: number;
 }
 
 // ---- Order ----

@@ -5,12 +5,22 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import EmptyState from '@/components/ui/EmptyState';
 import { useCartStore } from '@/stores/cartStore';
 import { formatPrice } from '@/lib/format';
+import { calculateShipping } from '@/lib/shipping';
+import { shopApi } from '@/services/api';
+import { CargoSettings } from '@/types';
+import { useState, useEffect } from 'react';
 
 export default function CartPage() {
   const { t } = useTranslation();
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
+  const [cargoSettings, setCargoSettings] = useState<CargoSettings | null>(null);
+
+  useEffect(() => {
+    shopApi.getCargoSettings().then(setCargoSettings).catch(console.error);
+  }, []);
+
   const subtotal = getTotal();
-  const shipping = subtotal > 0 ? 50000 : 0; // placeholder cargo cost
+  const shipping = calculateShipping(items, cargoSettings);
   const total = subtotal + shipping;
 
   return (
@@ -39,7 +49,7 @@ export default function CartPage() {
             {items.map((item) => (
               <div key={`${item.product.id}-${item.size}-${item.color}`} className="flex gap-4 rounded-md border border-border p-4">
                 <Link to={`/product/${item.product.slug}`} className="w-20 h-24 rounded overflow-hidden bg-secondary shrink-0">
-                  <img src={item.product.images[0]?.url} alt={item.product.name} className="h-full w-full object-cover" />
+                  <img src={item.product.images[0]?.image_url} alt={item.product.name} className="h-full w-full object-cover" />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link to={`/product/${item.product.slug}`} className="text-sm font-medium hover:underline">{item.product.name}</Link>
