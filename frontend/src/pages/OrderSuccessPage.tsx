@@ -66,8 +66,20 @@ export default function OrderSuccessPage() {
       setUploadSuccess(true);
       setOrderStatus('RECEIPT_SUBMITTED');
     } catch (err: any) {
-      console.error("Upload failed:", err);
-      const errorDetail = err.response?.data?.detail || err.response?.data?.error || "Check your internet connection or file format.";
+      console.error("DEBUG: Full Upload Error Object:", err);
+      
+      let errorDetail = "Check your internet connection or file format.";
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          errorDetail = err.response.data;
+        } else {
+          // Flatten standard DRF error objects or show whole JSON
+          errorDetail = err.response.data.detail || err.response.data.error || JSON.stringify(err.response.data);
+        }
+      } else if (err.message) {
+        errorDetail = err.message;
+      }
+      
       alert(`Failed to upload receipt: ${errorDetail}`);
     } finally {
       setUploadLoading(false);

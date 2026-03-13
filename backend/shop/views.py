@@ -247,42 +247,58 @@ class OrderPaymentReceiptView(APIView):
     parser_classes = (parsers.MultiPartParser, parsers.FormParser)
 
     def post(self, request):
-        order_id = request.data.get('order_id')
-        if not order_id:
-            return Response({"detail": "order_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Match by order_number or id
-        order = Order.objects.filter(order_number=order_id).first()
-        if not order and str(order_id).isdigit():
-            order = Order.objects.filter(id=order_id).first()
-
-        if not order:
-            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        if order.status == Order.Status.PAID:
-            return Response({"detail": "Order is already paid."}, status=status.HTTP_400_BAD_REQUEST)
-            
-        file_obj = request.FILES.get('receipt_image')
-        if not file_obj:
-            return Response({"detail": "No receipt image provided."}, status=status.HTTP_400_BAD_REQUEST)
-            
-        receipt, created = PaymentReceipt.objects.update_or_create(
-            order=order,
-            defaults={
-                'receipt_image': file_obj,
-                'note': request.data.get('note', '')
-            }
-        )
-        
-        order.status = Order.Status.RECEIPT_SUBMITTED
-        order.save()
-        
         try:
-            send_telegram_notification(order, receipt=receipt)
-        except Exception as e:
-            print(f"Telegram notification fail: {e}")
+            order_id = request.data.get('order_id')
+            if not order_id:
+                return Response({"detail": "order_id is required."}, status=status.HTTP_400_BAD_REQUEST)
             
-        return Response({"detail": "Receipt submitted successfully. We will verify your payment."}, status=status.HTTP_200_OK)
+            # Match by order_number or id
+            order = Order.objects.filter(order_number=order_id).first()
+            if not order and str(order_id).isdigit():
+                order = Order.objects.filter(id=order_id).first()
+
+            if not order:
+                return Response({"detail": f"Order not found for ID: {order_id}"}, status=status.HTTP_404_NOT_FOUND)
+            
+            if order.status == Order.Status.PAID:
+                return Response({"detail": "Order is already paid."}, status=status.HTTP_400_BAD_REQUEST)
+                
+            file_obj = request.FILES.get('receipt') or request.FILES.get('receipt_image')
+            if not file_obj:
+                # Log keys present in request.FILES to help debug
+                files_keys = list(request.FILES.keys())
+                data_keys = list(request.data.keys())
+                return Response({
+                    "detail": "No receipt file provided. Expected field 'receipt'.",
+                    "debug_info": {
+                        "files_keys": files_keys,
+                        "data_keys": data_keys
+                    }
+                }, status=status.HTTP_400_BAD_REQUEST)
+                
+            receipt, created = PaymentReceipt.objects.update_or_create(
+                order=order,
+                defaults={
+                    'receipt_image': file_obj,
+                    'note': request.data.get('note', '')
+                }
+            )
+            
+            order.status = Order.Status.RECEIPT_SUBMITTED
+            order.save()
+            
+            # Trigger Telegram notification with receipt
+            try:
+                send_telegram_notification(order, receipt=receipt)
+            except Exception as e:
+                print(f"Telegram notification fail: {e}")
+                
+            return Response({"detail": "Receipt submitted successfully. We will verify your payment."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            import traceback
+            error_msg = f"Unexpected Server Error: {str(e)}\n{traceback.format_exc()}"
+            print(error_msg)
+            return Response({"detail": error_msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PaymeUrlView(APIView):
     permission_classes = [AllowAny]

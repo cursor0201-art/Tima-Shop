@@ -92,15 +92,16 @@ export const shopApi = {
     submitReceipt: async (orderId: string | number, file: File, note: string = ''): Promise<any> => {
         const formData = new FormData();
         formData.append('order_id', String(orderId));
-        formData.append('receipt_image', file);
+        formData.append('receipt', file);
         formData.append('note', note);
         
         console.log('DEBUG: Uploading receipt...', {
             url: `${api.defaults.baseURL}/api/payment/receipt/`,
-            order_id: orderId,
+            order_id: String(orderId),
             file_name: file.name,
             file_type: file.type,
-            file_size: file.size
+            file_size: file.size,
+            formDataKeys: ['order_id', 'receipt', 'note']
         });
 
         try {
@@ -115,7 +116,8 @@ export const shopApi = {
             console.error('DEBUG: Upload failed:', {
                 status: error.response?.status,
                 data: error.response?.data,
-                message: error.message
+                message: error.message,
+                responseData: error.response?.data
             });
             throw error;
         }
