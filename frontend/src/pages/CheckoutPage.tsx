@@ -38,49 +38,43 @@ export default function CheckoutPage() {
     }
 
     setLoading(true);
+    const orderDataForLog = {
+      customer_name: form.name,
+      customer_phone: form.phone,
+      customer_address: form.address,
+      customer_comment: form.comment,
+      delivery_method: form.delivery_method,
+      payment_method: form.payment_method,
+    };
+    console.log("DEBUG: before create order", orderDataForLog);
     try {
       const orderItems = items.map(item => {
-        // Try exact match first
         let variant = item.product.variants.find(v => v.size === item.size && v.color === item.color);
-
-        // Fallback: If not found, try any variant with stock > 0
         if (!variant) {
           variant = item.product.variants.find(v => v.stock > 0) || item.product.variants[0];
         }
-
         return {
           sku_id: variant?.id,
           qty: item.quantity
         };
       }).filter(i => i.sku_id);
 
-      const payload = {
-        customer_name: form.name,
-        customer_phone: form.phone,
-        customer_address: form.address,
-        customer_comment: form.comment,
-        delivery_method: form.delivery_method,
-        payment_method: form.payment_method,
+      const orderPayload = {
+        ...orderDataForLog,
         items: orderItems,
       };
 
-      console.log("Creating order with payload:", payload);
-
-      const res = await shopApi.createOrder(payload);
-      clearCart();
-
-      if (form.payment_method === 'CARD') {
-        try {
-          const { url } = await shopApi.getPaymeUrl(res.public_token);
-          window.location.href = url;
-          return;
-        } catch (paymeError) {
-          console.error("Failed to get Payme URL:", paymeError);
-          // Fallback to success page if Payme URL fails, or show error
-        }
-      }
+      const res = await shopApi.createOrder(orderPayload);
+      console.log("DEBUG: order create success", res);
+      console.log("DEBUG: order id received", res.order_number);
       
-      navigate(`/order-success?token=${res.public_token}&order=${res.order_number}`);
+      const targetUrl = `/order-success?token=${res.public_token}&order=${res.order_number}`;
+      console.log("DEBUG: redirect target", targetUrl);
+
+      navigate(targetUrl);
+      
+      console.log("DEBUG: cart clear action");
+      clearCart();
     } catch (error: any) {
       console.error("Order creation error:", error);
       const detail = error.response?.data?.detail || t('checkout.orderError');

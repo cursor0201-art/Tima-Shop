@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from decimal import Decimal
 
 from .models import Category, Brand, Product, SKU, CargoSettings, Order, OrderItem, PaymeTransaction, PaymentReceipt
@@ -240,6 +241,52 @@ class SubmitReceiptView(APIView):
         order.save()
         
         # Trigger Telegram notification with receipt
+        try:
+            send_telegram_notification(order, receipt=receipt)
+        except Exception as e:
+            print(f"Telegram notification fail: {e}")
+            
+        return Response({"detail": "Receipt submitted successfully. We will verify your payment."}, status=status.HTTP_200_OK)
+
+class OrderPaymentReceiptView(APIView):
+    permission_classes = [AllowAny]
+    parser_classes = (pagination.parsers.MultiPartParser, pagination.parsers.FormParser) if hasattr(pagination, 'parsers') else []
+
+    def post(self, request):
+        order_id = request.data.get('order_id')
+        if not order_id:
+            return Response({"detail": "order_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Match by id or order_number
+        order = Order.objects.filter(Q(id__isdigit=True, id=order_id if str(order_id).isdigit() else -1) | Q(order_number=order_id)).first()
+        if not order:
+            # Try numeric id specifically if the above Q felt risky or if it's strictly order_number
+             order = Order.objects.filter(order_number=order_id).first()
+        
+        if not order and str(order_id).isdigit():
+             order = Order.objects.filter(id=order_id).first()
+
+        if not order:
+            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if order.status == Order.Status.PAID:
+            return Response({"detail": "Order is already paid."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        file_obj = request.FILES.get('receipt_image')
+        if not file_obj:
+            return Response({"detail": "No receipt image provided."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        receipt, created = PaymentReceipt.objects.update_or_create(
+            order=order,
+            defaults={
+                'receipt_image': file_obj,
+                'note': request.data.get('note', '')
+            }
+        )
+        
+        order.status = Order.Status.RECEIPT_SUBMITTED
+        order.save()
+        
         try:
             send_telegram_notification(order, receipt=receipt)
         except Exception as e:

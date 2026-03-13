@@ -75,7 +75,7 @@ export default function OrderSuccessPage() {
     if (!publicToken || !receiptFile) return;
     setUploadLoading(true);
     try {
-      await shopApi.submitReceipt(publicToken, receiptFile, note);
+      await shopApi.submitReceipt(orderNumber, receiptFile, note);
       setUploadSuccess(true);
       setOrderStatus('RECEIPT_SUBMITTED');
     } catch (err) {

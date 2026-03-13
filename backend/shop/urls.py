@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     CategoryViewSet, ProductViewSet, CategoryListView, BrandListView, ProductPublicListView, ProductPublicDetailView,
     CargoSettingsView, OrderCreateView, OrderPublicDetailView, PaymeUrlView, PaymeView,
-    PaymentInstructionsView, SubmitReceiptView,
+    PaymentInstructionsView, SubmitReceiptView, OrderPaymentReceiptView,
     AdminProductViewSet, AdminOrderViewSet, AdminCargoSettingsView
 )
 from rest_framework.routers import DefaultRouter
@@ -23,6 +23,7 @@ urlpatterns = [
     path('cargo-settings/', CargoSettingsView.as_view(), name='cargo-settings'),
     
     path('orders/', OrderCreateView.as_view(), name='order-create'),
+    path('payment/receipt/', OrderPaymentReceiptView.as_view(), name='payment-receipt'),
     path('orders/public/<uuid:public_token>/', OrderPublicDetailView.as_view(), name='order-public-detail'),
     path('orders/public/<uuid:public_token>/payme-url/', PaymeUrlView.as_view(), name='payme-url'),
     path('orders/payment-instructions/', PaymentInstructionsView.as_view(), name='payment-instructions'),

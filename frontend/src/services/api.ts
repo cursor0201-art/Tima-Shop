@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { Product, Category, CargoSettings, CreateOrderPayload, CreateOrderResponse } from '../types';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 const api = axios.create({
-    baseURL: API_URL,
+    baseURL: API_URL.endsWith('/api') ? API_URL : `${API_URL.replace(/\/$/, '')}/api`,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -88,11 +88,12 @@ export const shopApi = {
         return response.data;
     },
 
-    submitReceipt: async (token: string, file: File, note: string = ''): Promise<any> => {
+    submitReceipt: async (orderId: string | number, file: File, note: string = ''): Promise<any> => {
         const formData = new FormData();
+        formData.append('order_id', String(orderId));
         formData.append('receipt_image', file);
         formData.append('note', note);
-        const response = await api.post(`/orders/public/${token}/submit-receipt/`, formData, {
+        const response = await api.post('/payment/receipt/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
