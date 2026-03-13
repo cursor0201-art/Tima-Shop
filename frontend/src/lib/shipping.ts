@@ -19,6 +19,14 @@ export function calculateShipping(items: CartItem[], settings: CargoSettings | n
 
   console.log(`DEBUG: Total weight: ${totalWeightGrams}g, Pricing Mode: ${settings.pricing_mode}`);
 
+  // Force weight-based calculation if we have weight, or follow settings
+  if (settings.pricing_mode === 'BY_WEIGHT' || (totalWeightGrams > 0 && !settings.fixed_fee)) {
+    const rate = Number(settings.price_per_kg || 500000); // Default to 500,000 per kg if not set
+    const fee = (totalWeightGrams / 1000) * rate;
+    console.log(`DEBUG: Using WEIGHT-BASED fee: ${fee} (Weight: ${totalWeightGrams}g, Rate: ${rate}/kg)`);
+    return fee;
+  }
+
   if (settings.pricing_mode === 'FIXED') {
     const fee = Number(settings.fixed_fee || 0);
     console.log(`DEBUG: Using FIXED fee: ${fee}`);
@@ -28,12 +36,6 @@ export function calculateShipping(items: CartItem[], settings: CargoSettings | n
   if (settings.pricing_mode === 'PERCENT') {
     const fee = (subtotal * Number(settings.percent_rate || 0)) / 100;
     console.log(`DEBUG: Using PERCENT fee: ${fee} (${settings.percent_rate}%)`);
-    return fee;
-  }
-
-  if (settings.pricing_mode === 'BY_WEIGHT') {
-    const fee = (totalWeightGrams / 1000) * Number(settings.price_per_kg || 0);
-    console.log(`DEBUG: Using WEIGHT-BASED fee: ${fee} (Weight: ${totalWeightGrams}g, Price/kg: ${settings.price_per_kg})`);
     return fee;
   }
 
