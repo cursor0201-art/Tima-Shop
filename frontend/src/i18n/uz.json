@@ -128,7 +128,13 @@
     "orderNumber": "Buyurtma raqami: {{number}}",
     "message": "Buyurtmangiz uchun rahmat! Tez orada siz bilan bog'lanamiz.",
     "contactManager": "Telegram orqali menejerga yozish",
-    "redirecting": "{{seconds}} soniyadan so'ng yo'naltiriladi..."
+    "redirecting": "{{seconds}} soniyadan so'ng yo'naltiriladi...",
+    "paid": "To'landi!",
+    "pending": "To'lov kutilmoqda...",
+    "canceled": "Bekor qilindi",
+    "messagePaid": "Sizning buyurtmangiz muvaffaqiyatli to'landi. Tez orada yetkazib berishga tayyorlaymiz.",
+    "messagePending": "To'lov tizimidan tasdiqlashni kutmoqdamiz. Bu bir necha daqiqa vaqt olishi mumkin.",
+    "backToHome": "Bosh sahifaga"
   },
   "about": {
     "title": "Biz haqimizda",

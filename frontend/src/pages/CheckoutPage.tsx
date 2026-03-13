@@ -68,6 +68,18 @@ export default function CheckoutPage() {
 
       const res = await shopApi.createOrder(payload);
       clearCart();
+
+      if (form.payment_method === 'CARD') {
+        try {
+          const { url } = await shopApi.getPaymeUrl(res.public_token);
+          window.location.href = url;
+          return;
+        } catch (paymeError) {
+          console.error("Failed to get Payme URL:", paymeError);
+          // Fallback to success page if Payme URL fails, or show error
+        }
+      }
+      
       navigate(`/order-success?token=${res.public_token}&order=${res.order_number}`);
     } catch (error: any) {
       console.error("Order creation error:", error);

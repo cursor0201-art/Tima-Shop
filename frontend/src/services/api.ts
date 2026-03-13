@@ -76,5 +76,27 @@ export const shopApi = {
     getOrderByToken: async (token: string): Promise<any> => {
         const response = await api.get(`/orders/public/${token}/`);
         return response.data;
+    },
+
+    getPaymeUrl: async (token: string): Promise<{ url: string }> => {
+        const response = await api.get(`/orders/public/${token}/payme-url/`);
+        return response.data;
+    },
+
+    getPaymentInstructions: async (): Promise<{ card_number: string, card_holder: string, instructions: string }> => {
+        const response = await api.get('/orders/payment-instructions/');
+        return response.data;
+    },
+
+    submitReceipt: async (token: string, file: File, note: string = ''): Promise<any> => {
+        const formData = new FormData();
+        formData.append('receipt_image', file);
+        formData.append('note', note);
+        const response = await api.post(`/orders/public/${token}/submit-receipt/`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
     }
 };
