@@ -6,25 +6,35 @@ export function calculateShipping(items: CartItem[], settings: CargoSettings | n
   const subtotal = items.reduce((sum, item) => sum + item.product.public_price * item.quantity, 0);
   let totalWeightGrams = 0;
 
-  items.forEach(item => {
+  items.forEach((item, index) => {
     const variant = item.product.variants.find(
       v => v.size === item.size && v.color === item.color
     );
+    const weight = variant?.weight_grams || 0;
+    console.log(`DEBUG: Item ${index} (${item.product.name}), SKU: ${item.size}/${item.color}, Weight: ${weight}g, Qty: ${item.quantity}`);
     if (variant && variant.weight_grams) {
       totalWeightGrams += variant.weight_grams * item.quantity;
     }
   });
 
-  if (settings.pricing_mode === 'FIXED' && settings.fixed_fee !== null) {
-    return Number(settings.fixed_fee);
+  console.log(`DEBUG: Total weight: ${totalWeightGrams}g, Pricing Mode: ${settings.pricing_mode}`);
+
+  if (settings.pricing_mode === 'FIXED') {
+    const fee = Number(settings.fixed_fee || 0);
+    console.log(`DEBUG: Using FIXED fee: ${fee}`);
+    return fee;
   }
 
-  if (settings.pricing_mode === 'PERCENT' && settings.percent_rate !== null) {
-    return (subtotal * Number(settings.percent_rate)) / 100;
+  if (settings.pricing_mode === 'PERCENT') {
+    const fee = (subtotal * Number(settings.percent_rate || 0)) / 100;
+    console.log(`DEBUG: Using PERCENT fee: ${fee} (${settings.percent_rate}%)`);
+    return fee;
   }
 
-  if (settings.pricing_mode === 'BY_WEIGHT' && settings.price_per_kg !== null) {
-    return (totalWeightGrams / 1000) * Number(settings.price_per_kg);
+  if (settings.pricing_mode === 'BY_WEIGHT') {
+    const fee = (totalWeightGrams / 1000) * Number(settings.price_per_kg || 0);
+    console.log(`DEBUG: Using WEIGHT-BASED fee: ${fee} (Weight: ${totalWeightGrams}g, Price/kg: ${settings.price_per_kg})`);
+    return fee;
   }
 
   return 0;

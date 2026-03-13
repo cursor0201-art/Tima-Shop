@@ -37,6 +37,7 @@ export default function CheckoutPage() {
 
   const subtotal = getTotal();
   const shipping = calculateShipping(items, cargoSettings);
+  console.log("DEBUG: Checkout Shipping:", shipping);
   const total = subtotal + shipping;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -202,14 +203,23 @@ export default function CheckoutPage() {
           <h2 className="text-lg font-semibold mb-4">{t('cart.title')}</h2>
           <div className="space-y-2 text-sm mb-4">
             {items.map((item) => (
-              <div key={`${item.product.id}-${item.size}-${item.color}`} className="flex justify-between">
-                <span className="text-muted-foreground truncate mr-2">
-                  {item.product.name} × {item.quantity}
-                </span>
-                <span className="font-medium shrink-0">
-                  {formatPrice(item.product.public_price * item.quantity)}
-                </span>
-              </div>
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground truncate max-w-[200px]">
+                      {item.product.name} × {item.quantity}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground italic">
+                      {item.size} / {item.color} 
+                      {(() => {
+                        const v = item.product.variants.find(v => v.size === item.size && v.color === item.color);
+                        return v?.weight_grams ? ` (${v.weight_grams}г)` : '';
+                      })()}
+                    </span>
+                  </div>
+                  <span className="font-medium shrink-0">
+                    {formatPrice(item.product.public_price * item.quantity)}
+                  </span>
+                </div>
             ))}
           </div>
           <div className="space-y-2 text-sm border-t border-border pt-3">

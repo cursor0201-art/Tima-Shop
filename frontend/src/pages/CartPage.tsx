@@ -21,6 +21,7 @@ export default function CartPage() {
 
   const subtotal = getTotal();
   const shipping = calculateShipping(items, cargoSettings);
+  console.log("DEBUG: Cart Shipping:", shipping);
   const total = subtotal + shipping;
 
   return (
@@ -53,7 +54,13 @@ export default function CartPage() {
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link to={`/product/${item.product.slug}`} className="text-sm font-medium hover:underline">{item.product.name}</Link>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.size} / {item.color}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {item.size} / {item.color}
+                    {(() => {
+                      const v = item.product.variants.find(v => v.size === item.size && v.color === item.color);
+                      return v?.weight_grams ? ` • ${v.weight_grams}г` : '';
+                    })()}
+                  </p>
                   <p className="text-sm font-semibold mt-2">{formatPrice(item.product.public_price)} {t('common.currency')}</p>
 
                   <div className="flex items-center gap-3 mt-3">
