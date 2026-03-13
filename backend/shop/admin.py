@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Brand, Product, ProductImage, SKU, CargoSettings, Order, OrderItem
+from .models import Category, Brand, Product, ProductImage, SKU, CargoSettings, Order, OrderItem, PaymentReceipt
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -42,10 +42,20 @@ class OrderItemInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('product_name_snapshot', 'sku_snapshot', 'unit_price_snapshot', 'line_total')
 
+class PaymentReceiptInline(admin.StackedInline):
+    model = PaymentReceipt
+    extra = 0
+    readonly_fields = ('submitted_at',)
+
+@admin.register(PaymentReceipt)
+class PaymentReceiptAdmin(admin.ModelAdmin):
+    list_display = ('order', 'submitted_at')
+    readonly_fields = ('submitted_at',)
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('order_number', 'customer_name', 'status', 'total', 'created_at')
     list_filter = ('status', 'delivery_method', 'payment_method')
     search_fields = ('order_number', 'customer_name', 'customer_phone')
     readonly_fields = ('order_number', 'public_token', 'subtotal', 'shipping_fee', 'total', 'created_at')
-    inlines = [OrderItemInline]
+    inlines = [OrderItemInline, PaymentReceiptInline]

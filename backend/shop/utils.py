@@ -2,7 +2,7 @@ import requests
 import os
 from django.conf import settings
 
-def send_telegram_notification(order):
+def send_telegram_notification(order, receipt=None):
     token = os.environ.get('TELEGRAM_BOT_TOKEN')
     chat_id = os.environ.get('TELEGRAM_CHAT_ID')
 
@@ -25,21 +25,31 @@ def send_telegram_notification(order):
     message += f"\n💰 *Итого:* {order.total} сум"
     if order.shipping_fee:
         message += f" (вкл. доставку {order.shipping_fee} сум)"
+    
+    if order.status == 'PAID':
+        message += "\n✅ *Статус:* ОПЛАЧЕНО"
+    elif order.status == 'RECEIPT_SUBMITTED':
+        message += "\n🧾 *Статус:* ЧЕК ОТПРАВЛЕН (ОЖИДАЕТ ПРОВЕРКИ)"
+        message += "\n\n📢 *Customer submitted a payment receipt. Manual verification required.*"
+    else:
+        message += f"\n🔄 *Статус:* {order.get_status_display()}"
 
-    # Try to get the first product image for the notification
+    # Try to get the photo: either the receipt or the first product image
     photo_url = None
-    first_item = items.first()
-    if first_item and first_item.product:
-        main_image = first_item.product.images.filter(is_main=True).first() or first_item.product.images.first()
-        if main_image:
-            # Construct absolute URL using SITE_URL from settings
-            site_url = getattr(settings, 'SITE_URL', 'http://localhost:8000').rstrip('/')
-            photo_url = main_image.image_url
-            # If the image_url is relative (starts with /media/), prepend SITE_URL
-            if photo_url.startswith('/'):
-                photo_url = f"{site_url}{photo_url}"
-            elif photo_url.startswith('media/'):
-                photo_url = f"{site_url}/{photo_url}"
+    site_url = getattr(settings, 'SITE_URL', 'http://localhost:8000').rstrip('/')
+
+    if receipt and receipt.receipt_image:
+        photo_url = f"{site_url}{receipt.receipt_image.url}"
+    else:
+        first_item = items.first()
+        if first_item and first_item.product:
+            main_image = first_item.product.images.filter(is_main=True).first() or first_item.product.images.first()
+            if main_image:
+                photo_url = main_image.image_url
+                if photo_url.startswith('/'):
+                    photo_url = f"{site_url}{photo_url}"
+                elif photo_url.startswith('media/'):
+                    photo_url = f"{site_url}/{photo_url}"
 
     if photo_url:
         url = f"https://api.telegram.org/bot{token}/sendPhoto"

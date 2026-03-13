@@ -2,7 +2,8 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     CategoryViewSet, ProductViewSet, CategoryListView, BrandListView, ProductPublicListView, ProductPublicDetailView,
-    CargoSettingsView, OrderCreateView, OrderPublicDetailView,
+    CargoSettingsView, OrderCreateView, OrderPublicDetailView, PaymeUrlView, PaymeView,
+    PaymentInstructionsView, SubmitReceiptView,
     AdminProductViewSet, AdminOrderViewSet, AdminCargoSettingsView
 )
 from rest_framework.routers import DefaultRouter
@@ -23,6 +24,10 @@ urlpatterns = [
     
     path('orders/', OrderCreateView.as_view(), name='order-create'),
     path('orders/public/<uuid:public_token>/', OrderPublicDetailView.as_view(), name='order-public-detail'),
+    path('orders/public/<uuid:public_token>/payme-url/', PaymeUrlView.as_view(), name='payme-url'),
+    path('orders/payment-instructions/', PaymentInstructionsView.as_view(), name='payment-instructions'),
+    path('orders/public/<uuid:public_token>/submit-receipt/', SubmitReceiptView.as_view(), name='submit-receipt'),
+    path('payme/', PaymeView.as_view(), name='payme-merchant-api'),
 
     # Admin Auth
     path('admin/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

@@ -105,6 +105,8 @@ class Order(models.Model):
 
     class Status(models.TextChoices):
         NEW = 'NEW', _('New')
+        AWAITING_PAYMENT = 'AWAITING_PAYMENT', _('Awaiting Payment')
+        RECEIPT_SUBMITTED = 'RECEIPT_SUBMITTED', _('Receipt Submitted')
         PAID = 'PAID', _('Paid')
         IN_CARGO = 'IN_CARGO', _('In Cargo')
         IN_UZ = 'IN_UZ', _('In Uzbekistan')
@@ -140,3 +142,32 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.qty}x {self.product_name_snapshot}"
+
+class PaymeTransaction(models.Model):
+    class State(models.IntegerChoices):
+        CREATED = 1, _('Created')
+        PERFORMED = 2, _('Performed')
+        CANCELLED = -1, _('Cancelled')
+        CANCEL_AFTER_PERFORM = -2, _('Cancelled After Perform')
+
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payme_transaction')
+    payme_id = models.CharField(max_length=255, unique=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    state = models.IntegerField(choices=State.choices, default=State.CREATED)
+    reason = models.IntegerField(null=True, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    payme_created_time = models.BigIntegerField(null=True, blank=True)
+    perform_time = models.DateTimeField(null=True, blank=True)
+    cancel_time = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Transaction {self.payme_id} for Order {self.order.order_number}"
+
+class PaymentReceipt(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='receipt')
+    receipt_image = models.ImageField(upload_to='receipts/')
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Receipt for Order {self.order.order_number}"

@@ -13,6 +13,11 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = ['*', '.koyeb.app']
 SITE_URL = "https://sorry-kathi-bave-hub-2aab441a.koyeb.app"
 
+# Manual Payment Settings
+PAYMENT_CARD_NUMBER = os.environ.get('PAYMENT_CARD_NUMBER', '0000 0000 0000 0000')
+PAYMENT_CARD_HOLDER = os.environ.get('PAYMENT_CARD_HOLDER', 'JOHN DOE')
+PAYMENT_INSTRUCTIONS = os.environ.get('PAYMENT_INSTRUCTIONS', 'Transfer the exact amount and upload the receipt screenshot')
+
 # Monkeypatch for Python 3.14 + Django < 5.2 Admin fix
 try:
     import django.template.context

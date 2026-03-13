@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Brand, Product, ProductImage, SKU, CargoSettings, Order, OrderItem
+from .models import Category, Brand, Product, ProductImage, SKU, CargoSettings, Order, OrderItem, PaymentReceipt
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,6 +57,11 @@ class OrderItemWriteSerializer(serializers.Serializer):
     sku_id = serializers.IntegerField()
     qty = serializers.IntegerField(min_value=1)
 
+class PaymentReceiptSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentReceipt
+        fields = ['id', 'receipt_image', 'submitted_at', 'note']
+
 class OrderWriteSerializer(serializers.ModelSerializer):
     items = OrderItemWriteSerializer(many=True, write_only=True)
 
@@ -77,11 +82,13 @@ class OrderItemReadSerializer(serializers.ModelSerializer):
 
 class OrderReadSerializer(serializers.ModelSerializer):
     items = OrderItemReadSerializer(many=True, read_only=True)
+    receipt = PaymentReceiptSerializer(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
         model = Order
         fields = [
             'id', 'order_number', 'public_token', 'customer_name', 'customer_phone', 
             'customer_address', 'customer_comment', 'delivery_method', 'payment_method', 
-            'status', 'subtotal', 'shipping_fee', 'total', 'created_at', 'items'
+            'status', 'status_display', 'subtotal', 'shipping_fee', 'total', 'created_at', 'items', 'receipt'
         ]
