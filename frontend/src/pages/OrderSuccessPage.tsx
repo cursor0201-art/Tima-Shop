@@ -48,21 +48,8 @@ export default function OrderSuccessPage() {
     fetchStatus();
     fetchInstructions();
 
-    // Poll for updates if still pending
-    const interval = setInterval(async () => {
-      try {
-        const order = await shopApi.getOrderByToken(publicToken);
-        setOrderData(order);
-        setOrderStatus(order.status);
-        if (order.status === 'PAID' || order.status === 'CANCELED') {
-          clearInterval(interval);
-        }
-      } catch (err) {
-        console.error("Polling error:", err);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
+    fetchStatus();
+    fetchInstructions();
   }, [publicToken]);
 
   const handleCopy = (text: string) => {
@@ -101,16 +88,16 @@ export default function OrderSuccessPage() {
           </div>
         );
       case 'RECEIPT_SUBMITTED':
-      case 'PAYMENT_SUBMITTED': // Backward compatibility if needed
+      case 'PAYMENT_SUBMITTED':
         return (
           <div className="flex flex-col items-center text-center">
-            <Clock size={64} className="text-info mb-6" />
-            <h1 className="text-3xl font-bold mb-2">Payment Submitted</h1>
+            <CheckCircle size={64} className="text-info mb-6" />
+            <h1 className="text-3xl font-bold mb-2">Чек отправлен</h1>
             <p className="text-lg text-muted-foreground mb-4">
               {t('orderSuccess.orderNumber', { number: orderNumber })}
             </p>
             <div className="bg-muted p-4 rounded-lg mb-8 max-w-md">
-              <p className="text-sm font-medium">Receipt received! We will verify your payment soon.</p>
+              <p className="text-sm font-medium">Мы проверим оплату. Спасибо!</p>
             </div>
           </div>
         );
