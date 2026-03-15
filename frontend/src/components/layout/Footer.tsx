@@ -6,51 +6,55 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border bg-secondary/30 mt-auto">
-      <div className="container-shop py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <footer className="bg-anthracite border-t border-white/5 mt-auto">
+      <div className="container-shop py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand */}
-          <div>
-            <h3 className="font-bold text-lg tracking-widest mb-3">TIMA_SHOP</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {t('about.content').slice(0, 100)}...
+          <div className="lg:pr-8">
+            <h3 className="font-serif text-2xl tracking-[0.15em] mb-6 uppercase text-foreground">tima-shop</h3>
+            <p className="text-sm text-foreground/60 leading-relaxed font-light">
+              {t('about.content').slice(0, 120)}...
             </p>
           </div>
 
           {/* Navigation */}
           <div>
-            <h4 className="font-semibold text-sm mb-3">{t('common.catalog')}</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/catalog" className="hover:text-foreground transition-colors">{t('common.catalog')}</Link></li>
-              <li><Link to="/catalog?sort=newest" className="hover:text-foreground transition-colors">{t('home.newArrivals')}</Link></li>
-              <li><Link to="/catalog?sort=popular" className="hover:text-foreground transition-colors">{t('home.popularProducts')}</Link></li>
+            <h4 className="font-sans font-medium text-xs tracking-[0.1em] uppercase mb-6 text-foreground/90">{t('common.catalog')}</h4>
+            <ul className="space-y-4 text-sm font-light text-foreground/60">
+              <li><Link to="/catalog" className="hover:text-gold transition-colors duration-300">{t('common.catalog')}</Link></li>
+              <li><Link to="/catalog?sort=newest" className="hover:text-gold transition-colors duration-300">{t('home.newArrivals')}</Link></li>
+              <li><Link to="/catalog?sort=popular" className="hover:text-gold transition-colors duration-300">{t('home.popularProducts')}</Link></li>
             </ul>
           </div>
 
           {/* Info */}
           <div>
-            <h4 className="font-semibold text-sm mb-3">{t('common.about')}</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/about" className="hover:text-foreground transition-colors">{t('common.about')}</Link></li>
-              <li><Link to="/delivery" className="hover:text-foreground transition-colors">{t('common.delivery')}</Link></li>
-              <li><Link to="/returns" className="hover:text-foreground transition-colors">{t('common.returns')}</Link></li>
-              <li><Link to="/faq" className="hover:text-foreground transition-colors">{t('common.faq')}</Link></li>
+            <h4 className="font-sans font-medium text-xs tracking-[0.1em] uppercase mb-6 text-foreground/90">{t('common.about')}</h4>
+            <ul className="space-y-4 text-sm font-light text-foreground/60">
+              <li><Link to="/about" className="hover:text-gold transition-colors duration-300">{t('common.about')}</Link></li>
+              <li><Link to="/delivery" className="hover:text-gold transition-colors duration-300">{t('common.delivery')}</Link></li>
+              <li><Link to="/returns" className="hover:text-gold transition-colors duration-300">{t('common.returns')}</Link></li>
+              <li><Link to="/faq" className="hover:text-gold transition-colors duration-300">{t('common.faq')}</Link></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold text-sm mb-3">{t('common.contacts')}</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>+998 90 123 45 67</li>
-              <li>info@timashop.uz</li>
-              <li>Telegram: @tima_shop</li>
+            <h4 className="font-sans font-medium text-xs tracking-[0.1em] uppercase mb-6 text-foreground/90">{t('common.contacts')}</h4>
+            <ul className="space-y-4 text-sm font-light text-foreground/60">
+              <li className="hover:text-gold transition-colors duration-300 cursor-pointer">+998 90 123 45 67</li>
+              <li className="hover:text-gold transition-colors duration-300 cursor-pointer">info@timashop.uz</li>
+              <li className="hover:text-gold transition-colors duration-300 cursor-pointer">Telegram: @tima_shop</li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-          © {year} TIMA_SHOP. All rights reserved.
+        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-light tracking-wide text-foreground/40">
+          <p>© {year} TIMA_SHOP. ALL RIGHTS RESERVED.</p>
+          <div className="flex gap-6">
+            <span className="hover:text-foreground/80 cursor-pointer transition-colors">PRIVACY POLICY</span>
+            <span className="hover:text-foreground/80 cursor-pointer transition-colors">TERMS OF SERVICE</span>
+          </div>
         </div>
       </div>
     </footer>

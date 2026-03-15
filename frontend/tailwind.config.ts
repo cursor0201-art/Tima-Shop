@@ -14,9 +14,20 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Montserrat", "Inter", "system-ui", "sans-serif"],
+        serif: ["Playfair Display", "serif"],
       },
       colors: {
+        gold: {
+          DEFAULT: "#b89871",
+          hover: "#a3825f",
+        },
+        forest: {
+          DEFAULT: "#0f2e22",
+        },
+        anthracite: {
+          DEFAULT: "#0a0a0a",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

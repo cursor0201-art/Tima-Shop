@@ -30,19 +30,22 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Link to={`/product/${product.slug}`} className="group block animate-fade-in">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-md bg-secondary">
+    <Link to={`/product/${product.slug}`} className="group block animate-fade-in relative">
+      <div className="relative aspect-[4/5] overflow-hidden bg-anthracite">
         <img
           src={product.images[0]?.image_url}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
           loading="lazy"
         />
 
+        {/* Dark subtle overlay for lower contrast */}
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
+
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
           {product.old_price && (
-            <span className="rounded bg-destructive px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-destructive-foreground">
+            <span className="bg-gold px-3 py-1 text-[9px] font-medium uppercase tracking-[0.2em] text-black shadow-lg">
               {t('common.sale')}
             </span>
           )}
@@ -51,25 +54,27 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Wishlist button */}
         <button
           onClick={toggleWishlist}
-          className="absolute top-2 right-2 p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground hover:bg-background transition-colors"
+          className="absolute top-3 right-3 p-2.5 rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-gold hover:text-black transition-all duration-300 z-10 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
           aria-label={inWishlist ? t('common.removeFromWishlist') : t('common.addToWishlist')}
         >
-          <Heart size={16} fill={inWishlist ? 'currentColor' : 'none'} />
+          <Heart size={16} fill={inWishlist ? 'currentColor' : 'none'} strokeWidth={1.5} />
         </button>
 
         {/* Quick add */}
         <button
           onClick={handleAddToCart}
-          className="absolute bottom-0 left-0 right-0 bg-foreground/90 text-background py-2.5 text-xs font-medium uppercase tracking-wider opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300"
+          className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md text-white py-4 text-xs font-light uppercase tracking-[0.2em] opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 hover:text-gold z-10"
         >
           {t('common.addToCart')}
         </button>
       </div>
 
-      <div className="mt-3 space-y-1">
-        <p className="text-xs text-muted-foreground uppercase tracking-wide">{product.brand?.name}</p>
-        <h3 className="text-sm font-medium leading-tight text-foreground">{product.name}</h3>
-        <PriceBlock price={product.public_price} oldPrice={product.old_price} />
+      <div className="mt-5 space-y-2 text-center px-2">
+        <p className="text-[10px] text-foreground/50 uppercase tracking-[0.2em]">{product.brand?.name || 'TIMA_SHOP'}</p>
+        <h3 className="text-sm font-serif font-medium leading-relaxed text-foreground tracking-wide group-hover:text-gold transition-colors duration-300 line-clamp-2 title-font">{product.name}</h3>
+        <div className="pt-2">
+          <PriceBlock price={product.public_price} oldPrice={product.old_price} />
+        </div>
       </div>
     </Link>
   );
@@ -78,12 +83,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 export function PriceBlock({ price, oldPrice }: { price: number; oldPrice?: number }) {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-semibold text-foreground">
+    <div className="flex items-center justify-center gap-3">
+      <span className="text-sm font-sans font-medium text-foreground tracking-wider">
         {formatPrice(price)} {t('common.currency')}
       </span>
       {oldPrice && (
-        <span className="text-xs text-muted-foreground line-through">
+        <span className="text-xs text-foreground/40 line-through tracking-wider">
           {formatPrice(oldPrice)} {t('common.currency')}
         </span>
       )}
