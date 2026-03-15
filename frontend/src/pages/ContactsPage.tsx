@@ -6,9 +6,9 @@ export default function ContactsPage() {
   const { t } = useTranslation();
 
   const contacts = [
-    { icon: Phone, label: t('contactsPage.phone'), value: '+998 90 123 45 67' },
+    { icon: Phone, label: t('contactsPage.phone'), value: '+998 91 919 42 32' },
     { icon: Mail, label: t('contactsPage.email'), value: 'info@timashop.uz' },
-    { icon: MessageCircle, label: t('contactsPage.telegram'), value: '@tima_shop' },
+    { icon: MessageCircle, label: t('contactsPage.telegram'), value: '@Tima_AD' },
     { icon: MapPin, label: t('contactsPage.address'), value: 'Tashkent, Uzbekistan' },
     { icon: Clock, label: t('contactsPage.workingHours'), value: t('contactsPage.workingHoursText') },
   ];

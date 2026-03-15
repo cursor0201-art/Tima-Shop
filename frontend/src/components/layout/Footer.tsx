@@ -42,9 +42,9 @@ export default function Footer() {
           <div>
             <h4 className="font-sans font-medium text-xs tracking-[0.1em] uppercase mb-6 text-foreground/90">{t('common.contacts')}</h4>
             <ul className="space-y-4 text-sm font-light text-foreground/60">
-              <li className="hover:text-gold transition-colors duration-300 cursor-pointer">+998 90 123 45 67</li>
+              <li className="hover:text-gold transition-colors duration-300 cursor-pointer">+998 91 919 42 32</li>
               <li className="hover:text-gold transition-colors duration-300 cursor-pointer">info@timashop.uz</li>
-              <li className="hover:text-gold transition-colors duration-300 cursor-pointer">Telegram: @tima_shop</li>
+              <li className="hover:text-gold transition-colors duration-300 cursor-pointer">Telegram: @Tima_AD</li>
             </ul>
           </div>
         </div>
