@@ -41,22 +41,23 @@ export default function HomePage() {
         {/* Background Image & Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=2000&q=80" 
+            src="https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=2000&q=80" 
             alt="Luxury Menswear" 
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_20%]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-anthracite via-black/60 to-black/40"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-anthracite via-transparent to-black/30"></div>
         </div>
 
-        <div className="relative z-10 container-shop text-center px-4 mt-20">
-          <div className="max-w-4xl mx-auto flex flex-col items-center">
+        <div className="relative z-10 container-shop px-4 mt-20">
+          <div className="max-w-2xl flex flex-col items-start text-left">
             <span className="text-gold tracking-[0.3em] text-xs md:text-sm font-light uppercase mb-6 animate-fade-in opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
               Exceptional Craftsmanship
             </span>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-8 leading-[1.1] animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
               {t('home.heroTitle')}
             </h1>
-            <p className="text-lg md:text-xl text-white/70 font-light mb-12 max-w-2xl animate-fade-in opacity-0 tracking-wide" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
+            <p className="text-lg md:text-xl text-white/70 font-light mb-12 animate-fade-in opacity-0 tracking-wide" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
               {t('home.heroSubtitle')}
             </p>
             <Link
