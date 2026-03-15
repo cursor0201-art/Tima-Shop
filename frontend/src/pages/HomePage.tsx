@@ -41,11 +41,11 @@ export default function HomePage() {
         {/* Background Image & Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=2000&q=80" 
-            alt="Luxury Watch" 
+            src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=2000&q=80" 
+            alt="Luxury Menswear" 
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-anthracite via-black/50 to-black/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-anthracite via-black/60 to-black/40"></div>
         </div>
 
         <div className="relative z-10 container-shop text-center px-4 mt-20">
