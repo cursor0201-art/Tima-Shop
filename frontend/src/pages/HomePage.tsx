@@ -108,14 +108,14 @@ export default function HomePage() {
         <div className="container-shop">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <div className="aspect-[4/5] relative overflow-hidden group">
-              <img src="https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&w=800&q=80" alt="Craftsmanship" className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-[2s] ease-out opacity-80" />
+              <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80" alt="Craftsmanship and Style" className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-[2s] ease-out opacity-80" />
               <div className="absolute inset-0 border border-white/20 m-6 z-10 pointer-events-none transition-all duration-700 group-hover:m-4"></div>
             </div>
             <div className="max-w-xl pl-0 lg:pl-10">
               <span className="text-gold tracking-[0.3em] text-xs font-medium uppercase mb-6 block">Heritage & Masterpiece</span>
-              <h2 className="text-4xl md:text-5xl font-serif text-white mb-8 leading-[1.2] tracking-wide">A Legacy of Precision</h2>
+              <h2 className="text-4xl md:text-5xl font-serif text-white mb-8 leading-[1.2] tracking-wide">A Legacy of Style</h2>
               <p className="text-white/60 font-light leading-relaxed mb-12 text-lg">
-                For decades, we have been crafting timeless pieces that transcend generations. Every detail is meticulously designed to reflect the pinnacle of luxury, ensuring that what you wear is not just an accessory, but a statement of enduring excellence and unparalleled craftsmanship.
+                For decades, we have been curating pieces that elevate your wardrobe. Every detail is meticulously designed to reflect the pinnacle of modern fashion, ensuring that what you wear is not just clothing, but a statement of enduring excellence and unparalleled style.
               </p>
               <Link to="/about" className="inline-block border-b border-gold text-gold pb-1 text-xs uppercase tracking-[0.2em] font-medium hover:text-white hover:border-white transition-colors duration-300">
                 Discover Our Story
